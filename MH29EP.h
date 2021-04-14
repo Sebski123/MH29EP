@@ -47,7 +47,7 @@ public:
     uint16_t WIDTH, HEIGHT;
     MH29EP(uint8_t SDI, uint8_t SCK, uint8_t CS, uint8_t DC, uint8_t RESET, uint8_t BUSY);
 
-    void init(mode mode);
+    void init(mode mode = BlackAndRed);
     void refresh();
     void sleep();
     void clear();
@@ -62,6 +62,7 @@ public:
     void drawLine(int sx, int sy, int ex, int ey, color);
     void drawDot(int x, int y, color color);
 
+    void readData();
     void readData(uint8_t &data);
     void writeData(uint8_t data);
     void writeCommand(uint8_t command);

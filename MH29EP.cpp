@@ -21,7 +21,7 @@ MH29EP::MH29EP(uint8_t SDI, uint8_t SCK, uint8_t CS, uint8_t DC, uint8_t RESET, 
     HEIGHT = 296; //296
 }
 
-void MH29EP::init(mode mode)
+void MH29EP::init(mode mode /*=BlackAndRed*/)
 {
     hwReset(); //Electronic paper IC reset
 
@@ -157,8 +157,20 @@ void MH29EP::spiRead(uint8_t &valueOut)
         spiDelay(1);
     }
 }
+void MH29EP::readData()
+{
+    uint8_t _;
+    DATA_INPUT;
+    spiDelay(1);
+    CHIP_SELECT_0;
+    DC_1;
+    spiRead(_);
+    CHIP_SELECT_1;
+    DATA_OUTPUT;
+}
 void MH29EP::readData(uint8_t &dataOut)
 {
+    dataOut = 0;
     DATA_INPUT;
     spiDelay(1);
     CHIP_SELECT_0;
