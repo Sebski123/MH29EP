@@ -1,3 +1,7 @@
+/*
+    see: https://cursedhardware.github.io/epd-driver-ic/UC8171c.pdf for documentation
+*/
+
 #ifndef mh29ep_h
 #define mh29ep_h
 
@@ -23,7 +27,6 @@
 
 #define READ_BUSY digitalRead(busy)
 #define READ_DATA digitalRead(data)
-
 
 
 enum mode
@@ -58,6 +61,11 @@ public:
     void drawLine(int sx, int sy, int ex, int ey, color);
     void drawDot(int x, int y, color color);
 
+    void readData(uint8_t &data);
+    void writeData(uint8_t data);
+    void writeCommand(uint8_t command);
+    void checkBusy(void);
+
 private:
     uint8_t data, clock, chipSelect, dc, res, busy;
     uint8_t HRES, VRES_byte1, VRES_byte2;
@@ -65,12 +73,7 @@ private:
     void spiDelay(uint8_t xrate);
     void spiRead(uint8_t &value);
     void spiWrite(uint8_t value);
-    void readData(uint8_t &data);
-
-    void writeData(uint8_t data);
-    void writeCommand(uint8_t command);
     void hwReset(void);
-    void checkBusy(void);
 };
 
 #endif
