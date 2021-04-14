@@ -10,8 +10,8 @@ MH29EP::MH29EP(uint8_t SDI, uint8_t SCK, uint8_t CS, uint8_t DC, uint8_t RESET, 
     busy = BUSY;
 
     pinMode(data, OUTPUT);
-    pinMode(data, OUTPUT);
     pinMode(clock, OUTPUT);
+    CHIP_SELECT_1;
     pinMode(chipSelect, OUTPUT);
     pinMode(dc, OUTPUT);
     pinMode(res, OUTPUT);
@@ -83,6 +83,18 @@ void MH29EP::showImage(const uint8_t black_image[])
 }
 void MH29EP::showImage(uint8_t black_image[], uint8_t red_image[])
 {
+    unsigned int i;
+    writeCommand(0x10); //Transfer old data
+    for (i = 0; i < 4736; i++)
+    {
+        writeData(black_image[i]);
+    }
+
+    writeCommand(0x13); //Transfer new data
+    for (i = 0; i < 4736; i++)
+    {
+        writeData(red_image[i]);
+    }
 }
 void MH29EP::showImage(const uint8_t black_image[], const uint8_t red_image[])
 {
