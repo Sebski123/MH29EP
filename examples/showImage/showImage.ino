@@ -1,4 +1,4 @@
-#include "Ap_29lmao.h"
+#include "BWR_29_lmao.h"
 #include "MH29EP.h"
 
 //IO settings
@@ -13,12 +13,12 @@ MH29EP display = MH29EP(SDI_Pin, SCK_Pin, CS_Pin, DC_Pin, RES_Pin, BUSY_Pin);
 
 void setup()
 {
-    display.init(BlackAndRed);
+    display.init();
     display.showImage(gImage_black1, gImage_red1);
     display.refresh();
     display.sleep(); //EPD_sleep,Sleep instruction is necessary, please do not delete!!!
     delay(6000);
-    display.init(BlackAndRed); //EPD init
+    display.init(); //EPD init
     display.clear();
     display.drawSquare(10, 10, 50, 50, Black, false);
     display.drawCircle(30, 30, 10, Red, true);
