@@ -25,36 +25,36 @@ void MH29EP::init(mode mode /*=BlackAndRed*/)
 {
     hwReset(); //Electronic paper IC reset
 
-    writeCommand(0x06);  //boost soft start
-    writeData(0x17); //A
-    writeData(0x17); //B
-    writeData(0x17); //C
+    writeCommand(0x06); //boost soft start, all default values
+    writeData(0x17);    //A
+    writeData(0x17);    //B
+    writeData(0x17);    //C
 
     writeCommand(0x04); //Power on
     checkBusy();        //waiting for the electronic paper IC to release the idle signal
 
-    writeCommand(0x00);  //panel setting
-    writeData(0x0f); //LUT from OTP£¬128x296
-    writeData(0x0d); //VCOM to 0V fast
+    writeCommand(0x00); //panel setting
+    writeData(0x0f);    //LUT from OTP, B/W/R, Scan up, Shift right, Booster on, don't Reset
+    //writeData(0x0d);    //VCOM to 0V fast
 
     writeCommand(0x61); //resolution setting
     writeData(WIDTH);
     writeData(HEIGHT >> 8);
     writeData(HEIGHT & 0xff);
 
-    writeCommand(0X50);  //VCOM AND DATA INTERVAL SETTING
-    writeData(0x77); //WBmode:VBDF 17|D7 VBDW 97 VBDB 57   WBRmode:VBDF F7 VBDW 77 VBDB 37  VBDR B7
+    writeCommand(0X50); //VCOM AND DATA INTERVAL SETTING
+    writeData(0x77);    //WBmode:VBDF 17|D7 VBDW 97 VBDB 57   WBRmode:VBDF F7 VBDW 77 VBDB 37  VBDR B7
 }
 void MH29EP::refresh()
 {
     writeCommand(0x12); //DISPLAY REFRESH
-    delay(100);  //!!!The delay here is necessary, 200uS at least!!!
+    delay(100);         //!!!The delay here is necessary, 200uS at least!!!
     checkBusy();
 }
 void MH29EP::sleep()
 {
-    writeCommand(0X50);  //VCOM AND DATA INTERVAL SETTING
-    writeData(0xf7); //WBmode:VBDF 17|D7 VBDW 97 VBDB 57    WBRmode:VBDF F7 VBDW 77 VBDB 37  VBDR B7
+    writeCommand(0X50); //VCOM AND DATA INTERVAL SETTING
+    writeData(0xf7);    //WBmode:VBDF 17|D7 VBDW 97 VBDB 57    WBRmode:VBDF F7 VBDW 77 VBDB 37  VBDR B7
 
     writeCommand(0X02); //power off
     checkBusy(); 
@@ -197,7 +197,7 @@ void MH29EP::writeCommand(uint8_t command)
 }
 void MH29EP::hwReset(void)
 {
-    RST_0;          // Module reset
+    RST_0;       // Module reset
     delay(1000); //At least 10ms delay
     RST_1;
     delay(1000);
@@ -212,4 +212,18 @@ void MH29EP::checkBusy(void)
         readData(busy);
     } while (!(busy & 0x01));
     delay(200);
+}
+uint16_t MH29EP::setPartialRamArea(uint16_t x, uint16_t y, uint16_t xe, uint16_t ye)
+{
+    x &= 0xFFF8;            // byte boundary, last three bits must be 0
+    xe = (xe - 1) | 0x0007; // byte boundary - 1, last three bits must be 1
+    writeCommand(0x90);     // partial window
+    writeData(x % 256);
+    writeData(xe % 256);
+    writeData(y / 256);
+    writeData(y % 256);
+    writeData(ye / 256);
+    writeData(ye % 256);
+    writeData(0x00);
+    return (7 + xe - x) / 8; // number of bytes to transfer per line
 }

@@ -75,6 +75,7 @@ private:
     void spiRead(uint8_t &value);
     void spiWrite(uint8_t value);
     void hwReset(void);
+    uint16_t setPartialRamArea(uint16_t x, uint16_t y, uint16_t xe, uint16_t ye);
 };
 
 #endif
