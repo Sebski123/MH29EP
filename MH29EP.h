@@ -44,6 +44,7 @@ enum color
 class MH29EP
 {
 public:
+    uint16_t WIDTH, HEIGHT;
     MH29EP(uint8_t SDI, uint8_t SCK, uint8_t CS, uint8_t DC, uint8_t RESET, uint8_t BUSY);
 
     void init(mode mode);
@@ -68,7 +69,6 @@ public:
 
 private:
     uint8_t data, clock, chipSelect, dc, res, busy;
-    uint8_t HRES, VRES_byte1, VRES_byte2;
 
     void spiDelay(uint8_t xrate);
     void spiRead(uint8_t &value);

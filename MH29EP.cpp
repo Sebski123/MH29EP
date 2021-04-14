@@ -17,9 +17,8 @@ MH29EP::MH29EP(uint8_t SDI, uint8_t SCK, uint8_t CS, uint8_t DC, uint8_t RESET, 
     pinMode(res, OUTPUT);
     pinMode(busy, INPUT);
 
-    HRES = 0x80;       //128
-    VRES_byte1 = 0x01; //296
-    VRES_byte2 = 0x28;
+    WIDTH = 128;  //128
+    HEIGHT = 296; //296
 }
 
 void MH29EP::init(mode mode)
@@ -39,9 +38,9 @@ void MH29EP::init(mode mode)
     writeData(0x0d); //VCOM to 0V fast
 
     writeCommand(0x61); //resolution setting
-    writeData(HRES);
-    writeData(VRES_byte1);
-    writeData(VRES_byte2);
+    writeData(WIDTH);
+    writeData(HEIGHT >> 8);
+    writeData(HEIGHT & 0xff);
 
     writeCommand(0X50);  //VCOM AND DATA INTERVAL SETTING
     writeData(0x77); //WBmode:VBDF 17|D7 VBDW 97 VBDB 57   WBRmode:VBDF F7 VBDW 77 VBDB 37  VBDR B7
