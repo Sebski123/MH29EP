@@ -23,6 +23,7 @@ MH29EP::MH29EP(uint8_t SDI, uint8_t SCK, uint8_t CS, uint8_t DC, uint8_t RESET, 
 
 void MH29EP::init(mode mode /*=BlackAndRed*/)
 {
+    color_mode = mode;
     hwReset(); //Electronic paper IC reset
 
     writeCommand(0x06); //boost soft start, all default values
@@ -33,9 +34,8 @@ void MH29EP::init(mode mode /*=BlackAndRed*/)
     writeCommand(0x04); //Power on
     checkBusy();        //waiting for the electronic paper IC to release the idle signal
 
-    writeCommand(0x00); //panel setting
-    writeData(0x0f);    //LUT from OTP, B/W/R, Scan up, Shift right, Booster on, don't Reset
-    //writeData(0x0d);    //VCOM to 0V fast
+    writeCommand(0x00);                           //panel setting
+    writeData(mode == BlackAndRed ? 0x0f : 0x1f); //LUT from OTP, Scan up, Shift right, Booster on, don't Reset     Color mode based on "mode"
 
     writeCommand(0x61); //resolution setting
     writeData(WIDTH);

@@ -71,6 +71,7 @@ public:
 
 private:
     uint8_t data, clock, chipSelect, dc, res, busy;
+    mode color_mode;
 
     void spiDelay(uint8_t xrate);
     void spiRead(uint8_t &value);
