@@ -16,24 +16,12 @@ void setup()
     display.init();
     display.showImage(gImage_black1, gImage_red1);
     display.refresh();
-    display.sleep(); //EPD_sleep,Sleep instruction is necessary, please do not delete!!!
-    delay(6000);
-    display.init(); //EPD init
+    display.sleep(); //Sleep instruction is necessary, please do not delete!!!
+    delay(2);
+    display.init();
     display.clear();
-    display.drawSquare(10, 10, 50, 50, Black, false);
-    display.drawCircle(30, 30, 10, Red, true);
-    display.drawLine(100, 100, 200, 100, Red);
-    
-    for (size_t i = 0; i < 10; i++)
-    {
-        for (size_t j = 0; j < 10; j++)
-        {
-            display.drawDot(200 + (5 * i), 10 + (5 * j), Black);
-        }
-    }
-
     display.refresh();
-    display.sleep(); //EPD_sleep,Sleep instruction is necessary, please do not delete!!!
+    display.sleep(); //Sleep instruction is necessary, please do not delete!!!
 }
 
 void loop()
