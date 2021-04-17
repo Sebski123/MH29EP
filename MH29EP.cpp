@@ -75,11 +75,31 @@ void MH29EP::clear()
     }
 }
 
-void MH29EP::showImage(uint8_t black_image[])
+void MH29EP::showImage(uint8_t image[], color color)
 {
+    if (color == Red && color_mode == BlackOnly)
+    {
+        return;
+    }
+    unsigned int i;
+    writeCommand((color == Black && color_mode == BlackAndRed) ? 0x10 : 0x13); //Transfer new data
+    for (i = 0; i < 4736; i++)
+    {
+        writeData(image[i]);
+    }
 }
-void MH29EP::showImage(const uint8_t black_image[])
+void MH29EP::showImage(const uint8_t image[], color color)
 {
+    if (color == Red && color_mode == BlackOnly)
+    {
+        return;
+}
+    unsigned int i;
+    writeCommand((color == Black && color_mode == BlackAndRed) ? 0x10 : 0x13); //Transfer new data
+    for (i = 0; i < 4736; i++)
+{
+        writeData(pgm_read_byte(&image[i]));
+    }
 }
 void MH29EP::showImage(uint8_t black_image[], uint8_t red_image[])
 {

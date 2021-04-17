@@ -53,8 +53,8 @@ public:
     void sleep();
     void clear();
 
-    void showImage(uint8_t black_image[]);
-    void showImage(const uint8_t black_image[]);
+    void showImage(uint8_t image[], color color);
+    void showImage(const uint8_t image[], color color);
     void showImage(uint8_t black_image[], uint8_t red_image[]);
     void showImage(const uint8_t black_image[], const uint8_t red_image[]);
 
