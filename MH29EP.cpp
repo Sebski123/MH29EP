@@ -131,6 +131,15 @@ void MH29EP::drawLine(int sx, int sy, int ex, int ey, color)
 }
 void MH29EP::drawDot(int x, int y, color color)
 {
+    if (x > WIDTH || y > HEIGHT)
+    {
+        return;
+    }
+    writeCommand(0x91); // partial in
+    setPartialRamArea(x, y, x + 1, y + 1);
+    writeCommand(color == Black ? 0x10 : 0x13);
+    writeData(0x7f);    // only leftmost bit is on
+    writeCommand(0x92); // partial out
 }
 
 void MH29EP::spiDelay(uint8_t xrate)
