@@ -120,8 +120,49 @@ void MH29EP::showImage(const uint8_t black_image[], const uint8_t red_image[])
     }
 }
 
-void MH29EP::drawSquare(int x, int y, int w, int h, color, bool filled)
+void MH29EP::drawSquare(int x, int y, int w, int h, color color, bool filled)
 {
+    if (x < 0 || y < 0 || w < 0 || h < 0 || x + w > WIDTH || y + h > HEIGHT)
+    {
+        return;
+    }
+    uint16_t xe = (x + w) - 1;
+    uint16_t ye = (y + h) - 1;
+    uint16_t xs_bx = x / 8;
+    uint16_t xe_bx = (xe + 7) / 8;
+    writeCommand(0x91); // partial in
+    setPartialRamArea(x, y, xe, ye);
+    writeCommand(color == Black ? 0x10 : 0x13);
+    for (int16_t y1 = y; y1 <= ye; y1++)
+    {
+        for (int16_t x1 = xs_bx; x1 < xe_bx; x1++)
+        {
+            if (filled)
+            {
+                writeData(0x00); // black is 0x00
+            }
+            else
+            {
+                if (y1 == y || y1 == ye)
+                {
+                    writeData(0x00); // top and bottom are black
+                }
+                else if (x1 == xs_bx)
+                {
+                    writeData(0x7f); // leftmost bit is black
+                }
+                else if (x1 == xe_bx - 1)
+                {
+                    writeData(0xfe); // rightmost bit is black
+                }
+                else
+{
+                    writeData(0xff); // rest is white
+                }
+            }
+        }
+    }
+    writeCommand(0x92); // partial out
 }
 void MH29EP::drawCircle(int x, int y, int r, color, bool filled)
 {
