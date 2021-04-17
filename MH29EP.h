@@ -1,5 +1,6 @@
 /*
-    see: https://cursedhardware.github.io/epd-driver-ic/UC8171c.pdf for documentation
+    see: https://cursedhardware.github.io/epd-driver-ic/UC8151d.pdf for documentation
+    https://cursedhardware.github.io/epd-driver-ic/UC8151c.pdf might also be useful 
 */
 
 #ifndef mh29ep_h
