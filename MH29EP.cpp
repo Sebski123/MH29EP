@@ -48,7 +48,7 @@ void MH29EP::init(mode mode /*=BlackAndRed*/)
 void MH29EP::refresh()
 {
     writeCommand(0x12); //DISPLAY REFRESH
-    delay(100);         //!!!The delay here is necessary, 200uS at least!!!
+    delay(2);           //!!!The delay here is necessary, 200uS at least!!!  datasheet page 15
     checkBusy();
 }
 void MH29EP::sleep()
@@ -83,6 +83,10 @@ void MH29EP::showImage(const uint8_t black_image[])
 }
 void MH29EP::showImage(uint8_t black_image[], uint8_t red_image[])
 {
+    if (color_mode == BlackOnly)
+    {
+        return;
+    }
     unsigned int i;
     writeCommand(0x10); //Transfer old data
     for (i = 0; i < 4736; i++)
@@ -98,6 +102,10 @@ void MH29EP::showImage(uint8_t black_image[], uint8_t red_image[])
 }
 void MH29EP::showImage(const uint8_t black_image[], const uint8_t red_image[])
 {
+    if (color_mode == BlackOnly)
+    {
+        return;
+    }
     unsigned int i;
     writeCommand(0x10); //Transfer old data
     for (i = 0; i < 4736; i++)
@@ -227,6 +235,11 @@ void MH29EP::checkBusy(void)
 }
 uint16_t MH29EP::setPartialRamArea(uint16_t x, uint16_t y, uint16_t xe, uint16_t ye)
 {
+    while (ye <= y)
+    {
+        ye++; //VRED must be greater than VRST
+    }
+
     x &= 0xFFF8;            // byte boundary, last three bits must be 0
     xe = (xe - 1) | 0x0007; // byte boundary - 1, last three bits must be 1
     writeCommand(0x90);     // partial window
