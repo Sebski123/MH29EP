@@ -126,8 +126,36 @@ void MH29EP::drawSquare(int x, int y, int w, int h, color, bool filled)
 void MH29EP::drawCircle(int x, int y, int r, color, bool filled)
 {
 }
-void MH29EP::drawLine(int sx, int sy, int ex, int ey, color)
+void MH29EP::drawLine(int sx, int sy, int ex, int ey, color color)
 {
+    if (sx < 0 || sy < 0 || ex < sx || ey < sy || ex > WIDTH || ey > HEIGHT)
+    {
+        return;
+    }
+    uint16_t xs_bx = sx / 8;
+    uint16_t xe_bx = (ex + 7) / 8;
+    writeCommand(0x91); // partial in
+    uint16_t numOfBytes = setPartialRamArea(sx, sy, ex, ey);
+    writeCommand(color == Black ? 0x10 : 0x13);
+    if (sy == ey)
+    {
+        for (size_t i = 0; i < numOfBytes; i++)
+        {
+            writeData(0x00);
+        }
+    }
+    else if (sx == ex)
+    {
+        for (size_t i = sy; i < ey; i++)
+        {
+            writeData(0x7f);
+        }
+    }
+    else
+{
+        //TODO: handle diagonal lines
+    }
+    writeCommand(0x92); // partial out
 }
 void MH29EP::drawDot(int x, int y, color color)
 {
