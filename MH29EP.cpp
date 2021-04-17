@@ -57,7 +57,7 @@ void MH29EP::sleep()
     writeData(0xf7);    //WBmode:VBDF 17|D7 VBDW 97 VBDB 57    WBRmode:VBDF F7 VBDW 77 VBDB 37  VBDR B7
 
     writeCommand(0X02); //power off
-    checkBusy(); 
+    checkBusy();
 }
 void MH29EP::clear()
 {
@@ -93,11 +93,11 @@ void MH29EP::showImage(const uint8_t image[], color color)
     if (color == Red && color_mode == BlackOnly)
     {
         return;
-}
+    }
     unsigned int i;
     writeCommand((color == Black && color_mode == BlackAndRed) ? 0x10 : 0x13); //Transfer new data
     for (i = 0; i < 4736; i++)
-{
+    {
         writeData(pgm_read_byte(&image[i]));
     }
 }
@@ -176,7 +176,7 @@ void MH29EP::drawSquare(int x, int y, int w, int h, color color, bool filled)
                     writeData(0xfe); // rightmost bit is black
                 }
                 else
-{
+                {
                     writeData(0xff); // rest is white
                 }
             }
@@ -213,7 +213,7 @@ void MH29EP::drawLine(int sx, int sy, int ex, int ey, color color)
         }
     }
     else
-{
+    {
         //TODO: handle diagonal lines
     }
     writeCommand(0x92); // partial out
