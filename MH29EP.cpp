@@ -1,5 +1,26 @@
 #include "MH29EP.h"
 
+extern char *__brkval;
+int freeMemory()
+{
+    char top;
+    return &top - __brkval;
+}
+
+int cmpfunc(const void *pa, const void *pb)
+{
+    // Need to cast the void * to int *
+    int *a = (int *)pa;
+    int *b = (int *)pb;
+    // The comparison
+    int diffx = a[0] - b[0];
+    if (diffx)
+    {
+        return diffx;
+    }
+    return a[1] - b[1];
+}
+
 MH29EP::MH29EP(uint8_t SDI, uint8_t SCK, uint8_t CS, uint8_t DC, uint8_t RESET, uint8_t BUSY)
 {
     data = SDI;
@@ -184,9 +205,76 @@ void MH29EP::drawSquare(int x, int y, int w, int h, color color, bool filled)
     }
     writeCommand(0x92); // partial out
 }
-void MH29EP::drawCircle(int x, int y, int r, color, bool filled)
+
+//http://rosettacode.org/wiki/Bitmap/Midpoint_circle_algorithm
+void MH29EP::drawCircle(int x0, int y0, int r, color color, bool filled)
 {
+    if (x0 < 0 || y0 < 0 || r < 0 || x0 + r > WIDTH || y0 + r > HEIGHT || x0 - r < 0 || y0 - r < 0 || r > 40) //max radius is 40 for memory saving this will still take about 1 kB
+    {
+        return;
+    }
+    Serial.println(freeMemory());
+    int c = (floor(((sqrt(2) * r) + 0.5)) * 4) + 8;
+    Serial.println(c);
+    int pixels[c][2];
+    Serial.println(freeMemory());
+    int count = 0;
+
+    auto f = 1 - r;
+    auto ddF_x = 0;
+    auto ddF_y = -2 * r;
+    auto x = 0;
+    auto y = r;
+
+    pixels[count][0] = x0;
+    pixels[count++][1] = y0 + r;
+    pixels[count][0] = x0;
+    pixels[count++][1] = y0 - r;
+    pixels[count][0] = x0 + r;
+    pixels[count++][1] = y0;
+    pixels[count][0] = x0 - r;
+    pixels[count++][1] = y0;
+
+    while (x < y)
+    {
+        if (f >= 0)
+        {
+            y--;
+            ddF_y += 2;
+            f += ddF_y;
+        }
+        x++;
+        ddF_x += 2;
+        f += ddF_x + 1;
+        pixels[count][0] = x0 + x;
+        pixels[count++][1] = y0 + y;
+        pixels[count][0] = x0 - x;
+        pixels[count++][1] = y0 + y;
+        pixels[count][0] = x0 + x;
+        pixels[count++][1] = y0 - y;
+        pixels[count][0] = x0 - x;
+        pixels[count++][1] = y0 - y;
+        pixels[count][0] = x0 + y;
+        pixels[count++][1] = y0 + x;
+        pixels[count][0] = x0 - y;
+        pixels[count++][1] = y0 + x;
+        pixels[count][0] = x0 + y;
+        pixels[count++][1] = y0 - x;
+        pixels[count][0] = x0 - y;
+        pixels[count++][1] = y0 - x;
+    }
+    Serial.println(freeMemory());
+
+    qsort(pixels, c, sizeof(pixels[0]), cmpfunc);
+    Serial.println("-----------------------------------------------------------------");
+
+    for (size_t i = 0; i < c; i++)
+    {
+        drawDot(pixels[i][0], pixels[i][1], color);
+    }
 }
+
+//http://rosettacode.org/wiki/Bitmap/Bresenham%27s_line_algorithm
 void MH29EP::drawLine(int sx, int sy, int ex, int ey, color color)
 {
     if (sx < 0 || sy < 0 || ex < sx || ey < sy || ex > WIDTH || ey > HEIGHT)
@@ -220,7 +308,8 @@ void MH29EP::drawLine(int sx, int sy, int ex, int ey, color color)
 }
 void MH29EP::drawDot(int x, int y, color color)
 {
-    if (x > WIDTH || y > HEIGHT)
+
+    if (x > WIDTH || y > HEIGHT || x < 0 || y < 0)
     {
         return;
     }
@@ -228,6 +317,7 @@ void MH29EP::drawDot(int x, int y, color color)
     setPartialRamArea(x, y, x + 1, y + 1);
     writeCommand(color == Black ? 0x10 : 0x13);
     writeData(0x7f);    // only leftmost bit is on
+    writeData(0xff);    // only leftmost bit is on
     writeCommand(0x92); // partial out
 }
 
